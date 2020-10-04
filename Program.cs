@@ -85,7 +85,7 @@ namespace Starbit_Route_Generator
             //This method will fill the level list in the Star Info section with the order of the stars.
             PopulateLevelList(route);
 
-            //Calls the method that will calculate the starbits for each star and prints out the final splits format
+            //Calls the method that will calculate the starbits for each star and prints out the final splits back into the text file
             CalculateLevelBits(route);
 
             //prints out final result and stops the program until the user is ready.
@@ -181,7 +181,7 @@ namespace Starbit_Route_Generator
                     currentTotalStarbits -= CurrentMaxStarbitLevel(i).collectedBits;
                     CurrentMaxStarbitLevel(i).collectedBits = CurrentMaxStarbitLevel(i).maxBits;
                     currentTotalStarbits += CurrentMaxStarbitLevel(i).collectedBits;
-                    CurrentMaxStarbitLevel(i).isStarComplete = false;
+                    CurrentMaxStarbitLevel(i).hasStarbitsCollected = true;
 
                 }
 
@@ -190,7 +190,7 @@ namespace Starbit_Route_Generator
                     currentTotalStarbits -= CurrentMaxStarbitLevel(i).collectedBits;
                     CurrentMaxStarbitLevel(i).collectedBits = CurrentMaxStarbitLevel(i).maxBits;
                     currentTotalStarbits += CurrentMaxStarbitLevel(i).collectedBits;
-                    CurrentMaxStarbitLevel(i).isStarComplete = false;
+                    CurrentMaxStarbitLevel(i).hasStarbitsCollected = true;
 
                 }
 
@@ -200,7 +200,7 @@ namespace Starbit_Route_Generator
                     currentTotalStarbits -= CurrentMaxStarbitLevel(i).collectedBits;
                     CurrentMaxStarbitLevel(i).collectedBits = CurrentMaxStarbitLevel(i).maxBits;
                     currentTotalStarbits += CurrentMaxStarbitLevel(i).collectedBits;
-                    CurrentMaxStarbitLevel(i).isStarComplete = false;
+                    CurrentMaxStarbitLevel(i).hasStarbitsCollected = true;
 
                 }
 
@@ -260,7 +260,8 @@ namespace Starbit_Route_Generator
 
             for (int i = 0; i < k; i++)
             {
-                if (StarInfo.levelList[i].maxBits > currentMax.maxBits && StarInfo.levelList[i].isStarComplete && 
+                if (StarInfo.levelList[i].maxBits > currentMax.maxBits && StarInfo.levelList[i].isStarComplete &&
+                    !StarInfo.levelList[i].hasStarbitsCollected &&
                     !StarInfo.levelList[i].HasNotifs() && !SpecialNotifs(StarInfo.levelList[i], StarInfo.levelList[i-1]))
                 {
                     currentMax = StarInfo.levelList[i];
@@ -271,7 +272,8 @@ namespace Starbit_Route_Generator
             {
                 for (int i = 0; i < k; i++)
                 {
-                    if (StarInfo.levelList[i].maxBits > currentMax.maxBits && StarInfo.levelList[i].isStarComplete)
+                    if (StarInfo.levelList[i].maxBits > currentMax.maxBits && StarInfo.levelList[i].isStarComplete &&
+                        !StarInfo.levelList[i].hasStarbitsCollected)
                     {
                         currentMax = StarInfo.levelList[i];
                     }

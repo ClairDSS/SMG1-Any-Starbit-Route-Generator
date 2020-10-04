@@ -38,6 +38,9 @@ namespace Starbit_Route_Generator
         //variable that keeps track which star number the given level is
         public int starNumber;
 
+        //boolean that checks to see if a star has already collected all of its possible starbits.
+        public bool hasStarbitsCollected = false;
+
         public Galaxy()
         {
 
