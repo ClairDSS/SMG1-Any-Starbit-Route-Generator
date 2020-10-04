@@ -1,6 +1,6 @@
 # SMG1-Any-Starbit-Route-Generator
 The point of this program is to create an optimal starbit route with any given SMG1 any% route!
-To use, just open the shortcut file and follow the instructions :)
+To use, just open the exe file and follow the instructions :)
 
 ALSO. Just so you know, I am very, very new to coding, so this was more of a for-fun thing than anything. Please do not make fun of my garbage programming, I am still learning.
 I hope to improve this program as I get better.
