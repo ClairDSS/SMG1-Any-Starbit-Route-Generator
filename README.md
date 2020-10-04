@@ -1,4 +1,5 @@
 # SMG1-Any-Starbit-Route-Generator
+NOTE that you must have .NET Core Desktop Runtime 3.1.8 installed to run this. You can get that here: https://dotnet.microsoft.com/download/dotnet-core/3.1
 The point of this program is to create an optimal starbit route with any given SMG1 any% route!
 To use, just open the exe file and follow the instructions :)
 
