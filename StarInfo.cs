@@ -8,12 +8,12 @@ namespace Starbit_Route_Generator
     class StarInfo
     {
         public static Galaxy gateway = new Galaxy(16, 16,false,false);
-        public static Galaxy goodegg1 = new Galaxy(18, 50, false, false);
+        public static Galaxy goodegg1 = new Galaxy(18, 53, false, false);
         public static Galaxy goodegg2 = new Galaxy(6, 6, false, false);
         public static Galaxy goodegg3 = new Galaxy(18, 69, false, false);
         public static Galaxy honeyhive1 = new Galaxy(18, 36, false, false);
-        public static Galaxy honeyhive2 = new Galaxy(18, 49, false, false);
-        public static Galaxy honeyhive3 = new Galaxy(18, 59, false, false);
+        public static Galaxy honeyhive2 = new Galaxy(18, 35, false, false);
+        public static Galaxy honeyhive3 = new Galaxy(18, 36, false, false);
         public static Galaxy loopdeeloop = new Galaxy(14, 14, true, true);
         public static Galaxy flipswitch = new Galaxy(0, 0, false, true);
         public static Galaxy bowserjr1 = new Galaxy(18, 32, false, true);

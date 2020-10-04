@@ -14,7 +14,7 @@ namespace Starbit_Route_Generator
         public static int currentStarCount = 0;
 
         //this variable is the amount extra frames the user wants to have from no-notification levels (ie, if 0, min starbits are 18)
-        public static int minBitLeeway = 0;
+        public static int minBitLeeway = 3;
 
         //this variable will tell how much leeway the player wants with starbits. For instance, do they collect 1030 or 1050 total?
         public static int totalBitLeeway = 0;
@@ -28,6 +28,9 @@ namespace Starbit_Route_Generator
 
         //this variable is the path of the splits
         public static string path;
+        
+        //this is the array of the user's inputted route
+        public static string[] route = new String[61];
 
         static void Main(string[] args)
         {
@@ -35,9 +38,6 @@ namespace Starbit_Route_Generator
 
             //Boolean just to make sure the user inputs the correct stuff
             bool canContinue = true;
-
-            //Strings
-            string[] route = new String[61];
 
             //gets information from user.
 
@@ -52,6 +52,10 @@ namespace Starbit_Route_Generator
                     Console.WriteLine("\nHow much leeway would you like to have in starbits throughout the run?\n" +
                         "If you choose 0, you may have to collect every single starbit in the route: ");
                     totalBitLeeway = int.Parse(InputColorChange());
+
+                    Console.WriteLine("\nHow much leeway would you like for starbit text boxes where you time your A press?\n" +
+                        "(ie, if you choose 0, levels without notifications will have 18, if you choose 1, they'll have 17, etc.): ");
+                    minBitLeeway = int.Parse(InputColorChange());
 
                     canContinue = true;
                 }
@@ -77,15 +81,17 @@ namespace Starbit_Route_Generator
                 Console.ReadKey();
                 Environment.Exit(0);
             }
-
+            
             //This method will fill the level list in the Star Info section with the order of the stars.
             PopulateLevelList(route);
 
             //Calls the method that will calculate the starbits for each star and prints out the final splits format
             CalculateLevelBits(route);
 
+            //prints out final result and stops the program until the user is ready.
             Console.WriteLine("Your starbit route has been generated :)");
             Console.ReadKey();
+            Environment.Exit(0);
         }
 
         public static void CalculateLevelBits(string[] route)
@@ -172,14 +178,16 @@ namespace Starbit_Route_Generator
                 //this section will check if the player has enough starbits total. This tells the program whether to require minimum or maximum bits from a level.
                 while (StarInfo.levelList[i] == StarInfo.slingpod && currentTotalStarbits < 400 + totalBitLeeway)
                 {
+                    currentTotalStarbits -= CurrentMaxStarbitLevel(i).collectedBits;
                     CurrentMaxStarbitLevel(i).collectedBits = CurrentMaxStarbitLevel(i).maxBits;
                     currentTotalStarbits += CurrentMaxStarbitLevel(i).collectedBits;
                     CurrentMaxStarbitLevel(i).isStarComplete = false;
+
                 }
 
                 while (StarInfo.levelList[i] == StarInfo.sweetsweet && currentTotalStarbits < 400 + totalBitLeeway)
                 {
-
+                    currentTotalStarbits -= CurrentMaxStarbitLevel(i).collectedBits;
                     CurrentMaxStarbitLevel(i).collectedBits = CurrentMaxStarbitLevel(i).maxBits;
                     currentTotalStarbits += CurrentMaxStarbitLevel(i).collectedBits;
                     CurrentMaxStarbitLevel(i).isStarComplete = false;
@@ -189,6 +197,7 @@ namespace Starbit_Route_Generator
                 while (StarInfo.levelList[i] == StarInfo.dripdrop && currentTotalStarbits < 600 + totalBitLeeway)
                 {
 
+                    currentTotalStarbits -= CurrentMaxStarbitLevel(i).collectedBits;
                     CurrentMaxStarbitLevel(i).collectedBits = CurrentMaxStarbitLevel(i).maxBits;
                     currentTotalStarbits += CurrentMaxStarbitLevel(i).collectedBits;
                     CurrentMaxStarbitLevel(i).isStarComplete = false;
@@ -217,12 +226,12 @@ namespace Starbit_Route_Generator
 
 
             //Writes final route to text file.
-            System.IO.StreamWriter splitText = new StreamWriter(path);
+           System.IO.StreamWriter splitText = new StreamWriter(path);
             for (int i = 0; i < 61; i++)
             {
                 splitText.WriteLine("{0} ({1})", route[i], starbitsCollected[i]);
             }
-            splitText.Close();
+           splitText.Close();
 
         }
 
@@ -252,27 +261,29 @@ namespace Starbit_Route_Generator
 
             for (int i = 0; i < k; i++)
             {
-                for (int j = 0; j < k; j++)
+                if (StarInfo.levelList[i].maxBits > currentMax.maxBits && StarInfo.levelList[i].isStarComplete && 
+                    !StarInfo.levelList[i].HasNotifs() && !SpecialNotifs(StarInfo.levelList[i], StarInfo.levelList[i-1]))
                 {
-                    if (StarInfo.levelList[i].HasNotifs())
-                        notifCounter++;
+                    currentMax = StarInfo.levelList[i];
                 }
+            }
 
-                if (notifCounter != 0)
-                {
-                    if (StarInfo.levelList[i].maxBits > currentMax.maxBits && StarInfo.levelList[i].isStarComplete && !StarInfo.levelList[i].HasNotifs())
-                    {
-                        currentMax = StarInfo.levelList[i];
-                    }
-                }
-
-                else
+            if (currentMax.maxBits == 0)
+            {
+                for (int i = 0; i < k; i++)
                 {
                     if (StarInfo.levelList[i].maxBits > currentMax.maxBits && StarInfo.levelList[i].isStarComplete)
                     {
                         currentMax = StarInfo.levelList[i];
                     }
                 }
+            }
+
+            if (currentMax.maxBits == 0)
+            {
+                Console.WriteLine("You cannot get enough starbits before {0}", route[k]);
+                Console.ReadKey();
+                Environment.Exit(0);
             }
 
             return currentMax;
@@ -305,7 +316,7 @@ namespace Starbit_Route_Generator
                 if (sanitizedRoute[i] == "honeyhive2" || sanitizedRoute[i] == "honeyhive 2" || sanitizedRoute[i] == "honey hive 2")
                     StarInfo.levelList[i] = StarInfo.honeyhive2;
                 if (sanitizedRoute[i] == "honeyhive3" || sanitizedRoute[i] == "honeyhive 3" || sanitizedRoute[i] == "honey hive 3")
-                    StarInfo.levelList[i] = StarInfo.honeyhive1;
+                    StarInfo.levelList[i] = StarInfo.honeyhive3;
                 if (sanitizedRoute[i] == "loopdeeloop" || sanitizedRoute[i] == "loopdeloop")
                     StarInfo.levelList[i] = StarInfo.loopdeeloop;
                 if (sanitizedRoute[i] == "bowser jr. 1" || sanitizedRoute[i] == "bowser jr 1" || sanitizedRoute[i] == "megaleg")
