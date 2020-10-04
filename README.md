@@ -11,3 +11,5 @@ When writing in the path, make sure it leads directly to your text file. (For ex
 
 # Notes
 If the program just hangs, it means your route doesn't get enough starbits to feed one of the hungry lumas. This is most likely to happen in the early game. For instance, if your route includes Sling Pod early on.
+
+If you notice any bugs or any places this can be improved, please tell me! I'm sure there's a ton of them both!
