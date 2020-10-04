@@ -257,7 +257,6 @@ namespace Starbit_Route_Generator
         public static Galaxy CurrentMaxStarbitLevel(int k)
         {
             Galaxy currentMax = new Galaxy();
-            int notifCounter = 0;
 
             for (int i = 0; i < k; i++)
             {
