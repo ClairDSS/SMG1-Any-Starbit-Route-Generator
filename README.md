@@ -11,7 +11,7 @@ This program reads the splits from a text file, so to use this program, create a
 When writing in the path, make sure it leads directly to your text file. (For example, "C:\Users\Claire\Desktop\Any% PushBackRoute.txt")
 
 # Notes
-If the program just hangs, it means your route doesn't get enough starbits to feed one of the hungry lumas. This is most likely to happen in the early game. For instance, if your route includes Sling Pod early on.
+If the program just hangs, it means your route doesn't get enough starbits to feed one of the hungry lumas. This is most likely to happen in the early game. For instance, if your route includes Sling Pod early on. This can also happen if you set your starbit leeway to be too high.
 
 Currently, the program overwrites the text in your text file, so be sure to back it up if you don't want to lose it.
 
