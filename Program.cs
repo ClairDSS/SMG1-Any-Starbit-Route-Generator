@@ -85,6 +85,7 @@ namespace Starbit_Route_Generator
             CalculateLevelBits(route);
 
             Console.WriteLine("Your starbit route has been generated :)");
+            Console.ReadKey();
         }
 
         public static void CalculateLevelBits(string[] route)
