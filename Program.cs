@@ -215,6 +215,16 @@ namespace Starbit_Route_Generator
                     currentTotalStarbits -= 600;
                 }
 
+                //this section will have to be reworked if I ever made this work for 120
+                //This checks if drip drop has been fed. Since drip drop is always the last hungry luma,
+                //this essentially checks if all hungry lumas have already been fed. 
+                //Obviously, this won't work this way in 120 (also the bowser 3 thing won't be good.)
+                if (StarInfo.dripdrop.isStarComplete &&
+                    StarInfo.levelList[i] != StarInfo.bowser3)
+                {
+                    StarInfo.levelList[i].collectedBits = 0;
+                }
+
                 //stores how many bits are collected. Adds to the total current starbits.
                 currentTotalStarbits += StarInfo.levelList[i].collectedBits;
             }
@@ -229,7 +239,10 @@ namespace Starbit_Route_Generator
            System.IO.StreamWriter splitText = new StreamWriter(path);
             for (int i = 0; i < 61; i++)
             {
-                splitText.WriteLine("{0} ({1})", route[i], starbitsCollected[i]);
+                if (starbitsCollected[i] != 0)
+                    splitText.WriteLine("{0} ({1})", route[i], starbitsCollected[i]);
+                else
+                    splitText.WriteLine(route[i]);
             }
            splitText.Close();
 
