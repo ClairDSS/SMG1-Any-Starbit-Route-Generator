@@ -41,6 +41,10 @@ namespace Starbit_Route_Generator
         //boolean that checks to see if a star has already collected all of its possible starbits.
         public bool hasStarbitsCollected = false;
 
+        //this boolean is especially for hungry luma galaxies. This keeps track of if they've all been fed or not.
+        //Only set to false if it's in level list.
+        public bool hasBeenFed = true;
+
         public Galaxy()
         {
 

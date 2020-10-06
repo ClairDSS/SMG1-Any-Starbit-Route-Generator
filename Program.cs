@@ -208,18 +208,23 @@ namespace Starbit_Route_Generator
                 if (StarInfo.levelList[i] == StarInfo.sweetsweet)
                 {
                     currentTotalStarbits -= 400;
+                    StarInfo.sweetsweet.hasBeenFed = true;
                 }
 
                 if (StarInfo.levelList[i] == StarInfo.dripdrop)
                 {
                     currentTotalStarbits -= 600;
+                    StarInfo.dripdrop.hasBeenFed = true;
                 }
 
-                //this section will have to be reworked if I ever made this work for 120
-                //This checks if drip drop has been fed. Since drip drop is always the last hungry luma,
-                //this essentially checks if all hungry lumas have already been fed. 
-                //Obviously, this won't work this way in 120 (also the bowser 3 thing won't be good.)
-                if (StarInfo.dripdrop.isStarComplete &&
+                if (StarInfo.levelList[i] == StarInfo.slingpod)
+                {
+                    currentTotalStarbits -= 400;
+                    StarInfo.slingpod.hasBeenFed = true;
+                }
+
+                //This checks if all hungry lumas have been fed. This should work regardless of which hungry lumas you have in whatever order.
+                if (StarInfo.sweetsweet.hasBeenFed && StarInfo.dripdrop.hasBeenFed && StarInfo.slingpod.hasBeenFed &&
                     StarInfo.levelList[i] != StarInfo.bowser3)
                 {
                     StarInfo.levelList[i].collectedBits = 0;
@@ -362,7 +367,10 @@ namespace Starbit_Route_Generator
                 if (sanitizedRoute[i] == "ghostly1" || sanitizedRoute[i] == "ghostly 1")
                     StarInfo.levelList[i] = StarInfo.ghostly1;
                 if (sanitizedRoute[i] == "sweet sweet" || sanitizedRoute[i] == "sweetsweet" || sanitizedRoute[i] == "sweetsweet 1")
+                {
                     StarInfo.levelList[i] = StarInfo.sweetsweet;
+                    StarInfo.sweetsweet.hasBeenFed = false;
+                }
                 if (sanitizedRoute[i] == "honeyhive c" || sanitizedRoute[i] == "honey hive c" || sanitizedRoute[i] == "honeyhivec")
                     StarInfo.levelList[i] = StarInfo.honeyhivec;
                 if (sanitizedRoute[i] == "good egg l" || sanitizedRoute[i] == "goodegg l" || sanitizedRoute[i] == "goodeggl")
@@ -432,11 +440,17 @@ namespace Starbit_Route_Generator
                 if (sanitizedRoute[i] == "buoy base s" || sanitizedRoute[i] == "buoybase s" || sanitizedRoute[i] == "buoybases")
                     StarInfo.levelList[i] = StarInfo.buoybases;
                 if (sanitizedRoute[i] == "drip drop" || sanitizedRoute[i] == "dripdrop")
+                {
                     StarInfo.levelList[i] = StarInfo.dripdrop;
+                    StarInfo.dripdrop.hasBeenFed = false;
+                } 
                 if (sanitizedRoute[i] == "honeyhive l" || sanitizedRoute[i] == "honey hive l" || sanitizedRoute[i] == "honeyhivel")
                     StarInfo.levelList[i] = StarInfo.honeyhivel;
                 if (sanitizedRoute[i] == "slingpod" || sanitizedRoute[i] == "sling pod")
+                {
                     StarInfo.levelList[i] = StarInfo.slingpod;
+                    StarInfo.slingpod.hasBeenFed = false;
+                }
                 if (sanitizedRoute[i] == "freezeflame s" || sanitizedRoute[i] == "freeze flame s")
                     StarInfo.levelList[i] = StarInfo.freezeflames;
                 if (sanitizedRoute[i] == "flipswitch" || sanitizedRoute[i] == "flip switch")
