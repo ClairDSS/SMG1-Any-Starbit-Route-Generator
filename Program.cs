@@ -61,7 +61,12 @@ namespace Starbit_Route_Generator
                 }
                 catch (System.FormatException)
                 {
-                    Console.WriteLine("Please enter a whole number.\n");
+                    Console.WriteLine("Please enter a whole number.");
+                    canContinue = false;
+                }
+                catch (System.OverflowException)
+                {
+                    Console.WriteLine("Believe it or not, that number won't work!");
                     canContinue = false;
                 }
             } while (!canContinue);
@@ -81,7 +86,19 @@ namespace Starbit_Route_Generator
                 Console.ReadKey();
                 Environment.Exit(0);
             }
+
+            //makes sure the leeway you enter isn't negative.
+            //this actually worked fine without this code, but I didn't wanna take any chances so here it is.
+            if (totalBitLeeway < 0)
+            {
+                totalBitLeeway = 0;
+            }
             
+            if (minBitLeeway < 0)
+            {
+                minBitLeeway = 0;
+            }
+
             //This method will fill the level list in the Star Info section with the order of the stars.
             PopulateLevelList(route);
 
