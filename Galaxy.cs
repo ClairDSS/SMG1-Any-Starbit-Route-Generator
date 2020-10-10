@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection.Metadata.Ecma335;
 using System.Reflection.PortableExecutable;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Starbit_Route_Generator
@@ -14,14 +15,14 @@ namespace Starbit_Route_Generator
         public static int[] starCountNotifTerrace = { 1, 3, 5, 7, 8, -1, -1, -1 , -1 };
         public static int[] starCountNotifFountain = { 9, 11, 12, 15, -1, -1, -1, -1, -1 };
         public static int[] starCountNotifKitchen = { 16, 18, 19, 20, 23, 28, 40, 49, 58 };
-        public static int[] starCountNotifBedroom = { 24, 26, 29, 30, 32, 33, -1, -1, -1 };
-        public static int[] starCountNotifEngineRoom = { 34, 36, 40, 42, 45, -1, -1, -1, -1 };
+        public static int[] starCountNotifBedroom = { 24, 26, 29, 30, 32, 33, 42, -1, -1, -1 };
+        public static int[] starCountNotifEngineRoom = { 34, 36, 40, 45, -1, -1, -1, -1, -1 };
         public static int[] starCountNotifGarden = { 46, 48, 52, -1, -1, -1, -1, -1, -1 };
 
         //booleans that check conditions to see if a texbox will appear. Specifically, star specific checks.
         public bool unlockGalaxy;
         public bool getCoin;
-        public bool isStarComplete;
+        public bool isStarComplete = false;
         public bool isGalaxyComplete;
         public static bool isFoutainUnlocked;
         public static bool isKitchenUnlocked;
@@ -45,6 +46,9 @@ namespace Starbit_Route_Generator
         //Only set to false if it's in level list.
         public bool hasBeenFed = true;
 
+        //this is the galaxy's reason for having a notification
+        public string reason;
+
         public Galaxy()
         {
 
@@ -61,17 +65,6 @@ namespace Starbit_Route_Generator
 
         public bool HasNotifs()
         {
-            //Checks if galaxy is complete (only applicable for single star galaxies in any%, or buoy base)
-            if (isGalaxyComplete)
-            {
-                return true;
-            }
-
-            //Checks if level gets coins.
-            if (getCoin)
-            {
-                return true;
-            }
             //checks if a galaxy or story chapter is unlocked on this star.
             for (int i = 0; i < 9; i++)
             {
@@ -105,7 +98,72 @@ namespace Starbit_Route_Generator
                     return true;
                 }
             }
+
+            //Checks if galaxy is complete (only applicable for single star galaxies in any%, or buoy base)
+            if (isGalaxyComplete)
+            {
+                return true;
+            }
+
+            //Checks if level gets coins.
+            if (getCoin)
+            {
+                return true;
+            }
             return false;
+        }
+
+        //Similar to the "HasNotifs" method, but returns what notification it has instead of if it has a notification
+        public string WhatNotifs()
+        {
+            //This is to be able to accumulate multiple reasons
+            string currentReason = "";
+            //checks if a galaxy or story chapter is unlocked on this star.
+            for (int i = 0; i < 9; i++)
+            {
+                if (this.starNumber == starCountNotifTerrace[i])
+                {
+                    currentReason += "New Galaxy/Story Chapter, ";
+                }
+
+                if (this.starNumber == starCountNotifFountain[i] && isFoutainUnlocked)
+                {
+                    currentReason += "New Galaxy/Story Chapter, ";
+                }
+
+                if (this.starNumber == starCountNotifKitchen[i] && isKitchenUnlocked)
+                {
+                    currentReason += "New Galaxy/Story Chapter, ";
+                }
+
+                if (this.starNumber == starCountNotifBedroom[i] && isBedroomUnlocked)
+                {
+                    currentReason += "New Galaxy/Story Chapter, ";
+                }
+
+                if (this.starNumber == starCountNotifEngineRoom[i] && isEngineRoomUnlocked)
+                {
+                    currentReason += "New Galaxy/Story Chapter, ";
+                }
+
+                if (this.starNumber == starCountNotifGarden[i] && isGardenUnlocked)
+                {
+                    currentReason += "New Galaxy/Story Chapter, ";
+                }
+            }
+
+            //Checks if galaxy is complete (only applicable for single star galaxies in any%, or buoy base)
+            if (isGalaxyComplete)
+            {
+                currentReason += "Galaxy Complete, ";
+            }
+
+            //Checks if level gets coins.
+            if (getCoin)
+            {
+                currentReason += "Coins, ";
+            }
+            return currentReason;
         }
 
     }

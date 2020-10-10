@@ -14,10 +14,13 @@ namespace Starbit_Route_Generator
         public static int currentStarCount = 0;
 
         //this variable is the amount extra frames the user wants to have from no-notification levels (ie, if 0, min starbits are 18)
-        public static int minBitLeeway = 3;
+        public static int minBitLeeway = 0;
 
         //this variable will tell how much leeway the player wants with starbits. For instance, do they collect 1030 or 1050 total?
         public static int totalBitLeeway = 0;
+
+        //This will determine if the user wants to print out what kind of notifications each galaxy will have.
+        public static bool printReason = true;
 
         //this variable is a special counter that keeps track if buoy base is completed,
         //as it is the only non-single star galaxy in the run that will be completed.
@@ -28,9 +31,15 @@ namespace Starbit_Route_Generator
 
         //this variable is the path of the splits
         public static string path;
+
+        //this variable is how many levels collect starbits that also have another notification
+        public static int notifOverlap = 0;
         
         //this is the array of the user's inputted route
         public static string[] route = new String[61];
+
+        //this is a list of levels where there is a notification overlap
+        public static string[] notifOverlapLevels = new string[61];
 
         static void Main(string[] args)
         {
@@ -71,6 +80,17 @@ namespace Starbit_Route_Generator
                 }
             } while (!canContinue);
 
+            string answer = "";
+            do
+            {
+                Console.WriteLine("\nWould you like to print out the notifications each star will have? This might help with routing. (Y/N): ");
+                answer = InputColorChange();
+                if (answer.ToLower().Trim() == "y")
+                    printReason = true;
+                else
+                    printReason = false;
+            } while (answer.Trim().ToLower() != "y" && answer.Trim().ToLower() != "n");
+
             try
             {
                 System.IO.StreamReader splitText = new StreamReader(path);
@@ -106,7 +126,7 @@ namespace Starbit_Route_Generator
             CalculateLevelBits(route);
 
             //prints out final result and stops the program until the user is ready.
-            Console.WriteLine("Your starbit route has been generated :)");
+            Console.WriteLine("\nYour starbit route has been generated :)");
             Console.ReadKey();
             Environment.Exit(0);
         }
@@ -186,6 +206,8 @@ namespace Starbit_Route_Generator
                 if (StarInfo.levelList[i] == StarInfo.honeyclimb)
                 {
                     StarInfo.honeyclimb.collectedBits = StarInfo.honeyclimb.maxBits;
+                    notifOverlapLevels[i] = "Honeyclimb";
+                    notifOverlap += 1;
                 }
 
                 if (StarInfo.levelList[i] == StarInfo.bowser3)
@@ -195,29 +217,35 @@ namespace Starbit_Route_Generator
                 //this section will check if the player has enough starbits total. This tells the program whether to require minimum or maximum bits from a level.
                 while (StarInfo.levelList[i] == StarInfo.slingpod && currentTotalStarbits < 400 + totalBitLeeway)
                 {
-                    currentTotalStarbits -= CurrentMaxStarbitLevel(i).collectedBits;
-                    CurrentMaxStarbitLevel(i).collectedBits = CurrentMaxStarbitLevel(i).maxBits;
-                    currentTotalStarbits += CurrentMaxStarbitLevel(i).collectedBits;
-                    CurrentMaxStarbitLevel(i).hasStarbitsCollected = true;
+                    //This galaxy is only in this loop so it doesn't have to call this method every single time I want to use
+                    //what it returns.
+                    Galaxy tempGalaxy = CurrentMaxStarbitLevel(i);
+
+                    currentTotalStarbits -= tempGalaxy.collectedBits;
+                    tempGalaxy.collectedBits = tempGalaxy.maxBits;
+                    currentTotalStarbits += tempGalaxy.collectedBits;
+                    tempGalaxy.hasStarbitsCollected = true;
 
                 }
 
                 while (StarInfo.levelList[i] == StarInfo.sweetsweet && currentTotalStarbits < 400 + totalBitLeeway)
                 {
-                    currentTotalStarbits -= CurrentMaxStarbitLevel(i).collectedBits;
-                    CurrentMaxStarbitLevel(i).collectedBits = CurrentMaxStarbitLevel(i).maxBits;
-                    currentTotalStarbits += CurrentMaxStarbitLevel(i).collectedBits;
-                    CurrentMaxStarbitLevel(i).hasStarbitsCollected = true;
+                    Galaxy tempGalaxy = CurrentMaxStarbitLevel(i);
 
+                    currentTotalStarbits -= tempGalaxy.collectedBits;
+                    tempGalaxy.collectedBits = tempGalaxy.maxBits;
+                    currentTotalStarbits += tempGalaxy.collectedBits;
+                    tempGalaxy.hasStarbitsCollected = true;
                 }
 
                 while (StarInfo.levelList[i] == StarInfo.dripdrop && currentTotalStarbits < 600 + totalBitLeeway)
                 {
+                    Galaxy tempGalaxy = CurrentMaxStarbitLevel(i);
 
-                    currentTotalStarbits -= CurrentMaxStarbitLevel(i).collectedBits;
-                    CurrentMaxStarbitLevel(i).collectedBits = CurrentMaxStarbitLevel(i).maxBits;
-                    currentTotalStarbits += CurrentMaxStarbitLevel(i).collectedBits;
-                    CurrentMaxStarbitLevel(i).hasStarbitsCollected = true;
+                    currentTotalStarbits -= tempGalaxy.collectedBits;
+                    tempGalaxy.collectedBits = tempGalaxy.maxBits;
+                    currentTotalStarbits += tempGalaxy.collectedBits;
+                    tempGalaxy.hasStarbitsCollected = true;
 
                 }
 
@@ -249,6 +277,16 @@ namespace Starbit_Route_Generator
 
                 //stores how many bits are collected. Adds to the total current starbits.
                 currentTotalStarbits += StarInfo.levelList[i].collectedBits;
+
+                //Calls methods that will determine the type of notification each star has
+                StarInfo.levelList[i].reason += StarInfo.levelList[i].WhatNotifs();
+                if (i > 0)
+                {
+                    if (SpecialNotifs(StarInfo.levelList[i], StarInfo.levelList[i - 1]))
+                    {
+                        StarInfo.levelList[i].reason += WhatSpecialNotifs(StarInfo.levelList[i], StarInfo.levelList[i - 1]);
+                    }
+                }
             }
 
             for (int i = 0; i < 61; i++)
@@ -261,12 +299,43 @@ namespace Starbit_Route_Generator
            System.IO.StreamWriter splitText = new StreamWriter(path);
             for (int i = 0; i < 61; i++)
             {
-                if (starbitsCollected[i] != 0)
-                    splitText.WriteLine("{0} ({1})", route[i], starbitsCollected[i]);
+                if (printReason)
+                {
+                    if (StarInfo.levelList[i].reason != "")
+                    {
+                        if (starbitsCollected[i] != 0)
+                            splitText.WriteLine("{0} ({1}) ({2})", route[i], starbitsCollected[i], StarInfo.levelList[i].reason.Trim());
+                        else
+                            splitText.WriteLine("{0} ({1})", route[i], StarInfo.levelList[i].reason.Trim());
+                    }
+                    else
+                    {
+                        if (starbitsCollected[i] != 0)
+                            splitText.WriteLine("{0} ({1})", route[i], starbitsCollected[i]);
+                        else
+                            splitText.WriteLine("{0}", route[i]);
+                    }
+                }
                 else
-                    splitText.WriteLine(route[i]);
+                {
+                    if (starbitsCollected[i] != 0)
+                        splitText.WriteLine("{0} ({1})", route[i], starbitsCollected[i]);
+                    else
+                        splitText.WriteLine(route[i]);
+                }
             }
-           splitText.Close();
+
+            splitText.Write("\nNumber of times starbit textboxes overlap with other notifications: {0}\n" +
+                "Levels where it happens: ", notifOverlap);
+
+            for (int i = 0; i < 61; i++)
+            {
+                if (notifOverlapLevels[i] != null)
+                {
+                    splitText.Write("{0}(#{1}, {2}), ", notifOverlapLevels[i], StarInfo.levelList[i].starNumber, StarInfo.levelList[i].reason.Trim());
+                }
+            }
+            splitText.Close();
 
         }
 
@@ -288,6 +357,25 @@ namespace Starbit_Route_Generator
             }
         }
 
+        //Method that determines what type of special notification a galaxy has
+        public static string WhatSpecialNotifs(Galaxy currentLevel, Galaxy previousLevel)
+        {
+            if (currentLevel == StarInfo.spacejunk3 ||
+                currentLevel == StarInfo.beachbowl1 ||
+                currentLevel == StarInfo.dustydune1 ||
+                (currentLevel == StarInfo.ghostly1 && StarInfo.seaslide2.isStarComplete) ||
+                (currentLevel == StarInfo.seaslide2 && StarInfo.ghostly1.isStarComplete))
+            {
+                return "New Galaxy ";
+            }
+            if (previousLevel == StarInfo.bowser1)
+            {
+                return "New Story Chapter ";
+            }
+
+            return "";
+        }
+
         //Calculates which level should collect more than 18 starbits based on it's total amount of starbits. Prioritizes levels without notifs
         public static Galaxy CurrentMaxStarbitLevel(int k)
         {
@@ -305,6 +393,7 @@ namespace Starbit_Route_Generator
 
             if (currentMax.maxBits == 0)
             {
+                notifOverlap += 1;
                 for (int i = 0; i < k; i++)
                 {
                     if (StarInfo.levelList[i].maxBits > currentMax.maxBits && StarInfo.levelList[i].isStarComplete &&
@@ -313,6 +402,8 @@ namespace Starbit_Route_Generator
                         currentMax = StarInfo.levelList[i];
                     }
                 }
+
+                notifOverlapLevels[currentMax.starNumber - 1] = route[currentMax.starNumber - 1];
             }
 
             if (currentMax.maxBits == 0)

@@ -74,8 +74,6 @@ namespace Starbit_Route_Generator
         public static Galaxy dustydune1 = new Galaxy();
         public static Galaxy bowser3 = new Galaxy(69, 69, false, false);
 
-        //this sets the "star complete" to true for 
-
         //this is a list of each star, populated during runtime
         public static Galaxy[] levelList = new Galaxy[61];
     }
