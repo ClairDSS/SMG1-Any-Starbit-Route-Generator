@@ -11,13 +11,16 @@ namespace Starbit_Route_Generator
     {
         //declare variables
 
-        //Array of star counts that result in a "new galaxy" or "new chapter" textbox
-        public static int[] starCountNotifTerrace = { 1, 3, 5, 7, 8, -1, -1, -1 , -1 };
-        public static int[] starCountNotifFountain = { 9, 11, 12, 15, -1, -1, -1, -1, -1 };
-        public static int[] starCountNotifKitchen = { 16, 18, 19, 20, 23, 28, 40, 49, 58 };
-        public static int[] starCountNotifBedroom = { 24, 26, 29, 30, 32, 33, 42, -1, -1, -1 };
-        public static int[] starCountNotifEngineRoom = { 34, 36, 40, 45, -1, -1, -1, -1, -1 };
-        public static int[] starCountNotifGarden = { 46, 48, 52, -1, -1, -1, -1, -1, -1 };
+        //Array of star counts that result in a "new galaxy" textbox
+        public static int[] starCountNotifTerrace = { 1, 3, 5, 7, 8, 60, -1 };
+        public static int[] starCountNotifFountain = { 9, 11, 12, 15, -1, -1, -1 };
+        public static int[] starCountNotifKitchen = { 16, 18, 19, 20, 23, 30, -1 };
+        public static int[] starCountNotifBedroom = { 24, 26, 29, 33, 42, -1, -1 };
+        public static int[] starCountNotifEngineRoom = { 34, 36, 40, 45, -1, -1, -1 };
+        public static int[] starCountNotifGarden = { 46, 48, 52, -1, -1, -1, -1 };
+
+        //Array of star courns that result in a "new chapter" textbox
+        public static int[] storyBookNotif = { 24, 28, 32, 40, 49, 58, -1 };
 
         //booleans that check conditions to see if a texbox will appear. Specifically, star specific checks.
         public bool unlockGalaxy;
@@ -47,7 +50,7 @@ namespace Starbit_Route_Generator
         public bool hasBeenFed = true;
 
         //this is the galaxy's reason for having a notification
-        public string reason;
+        public string[] reason = new string [5];
 
         public Galaxy()
         {
@@ -66,7 +69,7 @@ namespace Starbit_Route_Generator
         public bool HasNotifs()
         {
             //checks if a galaxy or story chapter is unlocked on this star.
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < 7; i++)
             {
                 if (this.starNumber == starCountNotifTerrace[i])
                 {
@@ -94,6 +97,11 @@ namespace Starbit_Route_Generator
                 }
 
                 if (this.starNumber == starCountNotifGarden[i] && isGardenUnlocked)
+                {
+                    return true;
+                }
+                
+                if (this.starNumber == storyBookNotif[i] && isKitchenUnlocked)
                 {
                     return true;
                 }
@@ -114,56 +122,59 @@ namespace Starbit_Route_Generator
         }
 
         //Similar to the "HasNotifs" method, but returns what notification it has instead of if it has a notification
-        public string WhatNotifs()
+        public void WhatNotifs()
         {
-            //This is to be able to accumulate multiple reasons
-            string currentReason = "";
+
             //checks if a galaxy or story chapter is unlocked on this star.
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < 7; i++)
             {
                 if (this.starNumber == starCountNotifTerrace[i])
                 {
-                    currentReason += "New Galaxy/Story Chapter, ";
+                    this.reason[2] = "G,";
                 }
 
                 if (this.starNumber == starCountNotifFountain[i] && isFoutainUnlocked)
                 {
-                    currentReason += "New Galaxy/Story Chapter, ";
+                    this.reason[2] = "G,";
                 }
 
                 if (this.starNumber == starCountNotifKitchen[i] && isKitchenUnlocked)
                 {
-                    currentReason += "New Galaxy/Story Chapter, ";
+                    this.reason[2] = "G,";
                 }
 
                 if (this.starNumber == starCountNotifBedroom[i] && isBedroomUnlocked)
                 {
-                    currentReason += "New Galaxy/Story Chapter, ";
+                    this.reason[2] = "G,";
                 }
 
                 if (this.starNumber == starCountNotifEngineRoom[i] && isEngineRoomUnlocked)
                 {
-                    currentReason += "New Galaxy/Story Chapter, ";
+                    this.reason[2] = "G,";
                 }
 
                 if (this.starNumber == starCountNotifGarden[i] && isGardenUnlocked)
                 {
-                    currentReason += "New Galaxy/Story Chapter, ";
+                    this.reason[2] = "G,";
+                }
+
+                if (this.starNumber == storyBookNotif[i] && isKitchenUnlocked)
+                {
+                    this.reason[3] = "R,";
                 }
             }
 
             //Checks if galaxy is complete (only applicable for single star galaxies in any%, or buoy base)
             if (isGalaxyComplete)
             {
-                currentReason += "Galaxy Complete, ";
+                this.reason[0] = "C,";
             }
 
             //Checks if level gets coins.
             if (getCoin)
             {
-                currentReason += "Coins, ";
+                this.reason[1] = "Co,";
             }
-            return currentReason;
         }
 
     }

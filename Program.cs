@@ -279,12 +279,12 @@ namespace Starbit_Route_Generator
                 currentTotalStarbits += StarInfo.levelList[i].collectedBits;
 
                 //Calls methods that will determine the type of notification each star has
-                StarInfo.levelList[i].reason += StarInfo.levelList[i].WhatNotifs();
+                StarInfo.levelList[i].WhatNotifs();
                 if (i > 0)
                 {
                     if (SpecialNotifs(StarInfo.levelList[i], StarInfo.levelList[i - 1]))
                     {
-                        StarInfo.levelList[i].reason += WhatSpecialNotifs(StarInfo.levelList[i], StarInfo.levelList[i - 1]);
+                       WhatSpecialNotifs(StarInfo.levelList[i], StarInfo.levelList[i - 1]);
                     }
                 }
             }
@@ -301,12 +301,31 @@ namespace Starbit_Route_Generator
             {
                 if (printReason)
                 {
-                    if (StarInfo.levelList[i].reason != "")
+                    if (StarInfo.levelList[i].reason[0] != null ||
+                        StarInfo.levelList[i].reason[1] != null ||
+                        StarInfo.levelList[i].reason[2] != null ||
+                        StarInfo.levelList[i].reason[3] != null ||
+                        StarInfo.levelList[i].reason[4] != null)
                     {
                         if (starbitsCollected[i] != 0)
-                            splitText.WriteLine("{0} ({1}) ({2})", route[i], starbitsCollected[i], StarInfo.levelList[i].reason.Trim());
+                        {
+                            splitText.Write("{0} ({1}) (", route[i], starbitsCollected[i]);
+
+                            for (int j = 0; j < 5; j++)
+                                splitText.Write("{0}", StarInfo.levelList[i].reason[j]);
+
+                            splitText.WriteLine(")");
+                        }
                         else
-                            splitText.WriteLine("{0} ({1})", route[i], StarInfo.levelList[i].reason.Trim());
+                        {
+
+                            splitText.Write("{0} (", route[i]);
+
+                            for (int j = 0; j < 5; j++)
+                                splitText.Write("{0}", StarInfo.levelList[i].reason[j]);
+
+                            splitText.WriteLine(")");
+                        }
                     }
                     else
                     {
@@ -332,9 +351,22 @@ namespace Starbit_Route_Generator
             {
                 if (notifOverlapLevels[i] != null)
                 {
-                    splitText.Write("{0}(#{1}, {2}), ", notifOverlapLevels[i], StarInfo.levelList[i].starNumber, StarInfo.levelList[i].reason.Trim());
+                    splitText.Write("{0}(#{1}, ", notifOverlapLevels[i], StarInfo.levelList[i].starNumber);
+
+                    for (int j = 0; j < 5; j++)
+                    {
+                        splitText.Write("{0}", StarInfo.levelList[i].reason[j]);
+                    }
+
+                    splitText.Write("), ");
                 }
             }
+
+            splitText.Write("\n\nC = Galaxy Complete\n" +
+                "Co = Coins\n" +
+                "G = Galaxy Unlocked\n" +
+                "R = New Story Chapter\n" +
+                "H = Hungry Luma");
             splitText.Close();
 
         }
@@ -347,7 +379,14 @@ namespace Starbit_Route_Generator
                 currentLevel == StarInfo.dustydune1 ||
                 (currentLevel == StarInfo.ghostly1 && StarInfo.seaslide2.isStarComplete) ||
                 (currentLevel == StarInfo.seaslide2 && StarInfo.ghostly1.isStarComplete) ||
-                previousLevel == StarInfo.bowser1)
+                (currentLevel == StarInfo.dripdrop && currentStarCount >= 55) ||
+                (currentLevel.starNumber == 55 && StarInfo.dripdrop.isStarComplete) ||
+                previousLevel == StarInfo.bowser1 ||
+                currentLevel.starNumber == 7 || 
+                currentLevel == StarInfo.bowserjr1 ||
+                currentLevel == StarInfo.bowser1 ||
+                currentLevel == StarInfo.bowserjr2 ||
+                currentLevel == StarInfo.bowser2)
             {
                 return true;
             }
@@ -358,22 +397,30 @@ namespace Starbit_Route_Generator
         }
 
         //Method that determines what type of special notification a galaxy has
-        public static string WhatSpecialNotifs(Galaxy currentLevel, Galaxy previousLevel)
+        public static void WhatSpecialNotifs(Galaxy currentLevel, Galaxy previousLevel)
         {
             if (currentLevel == StarInfo.spacejunk3 ||
                 currentLevel == StarInfo.beachbowl1 ||
                 currentLevel == StarInfo.dustydune1 ||
                 (currentLevel == StarInfo.ghostly1 && StarInfo.seaslide2.isStarComplete) ||
-                (currentLevel == StarInfo.seaslide2 && StarInfo.ghostly1.isStarComplete))
+                (currentLevel == StarInfo.seaslide2 && StarInfo.ghostly1.isStarComplete) ||
+                currentLevel.starNumber == 7)
             {
-                return "New Galaxy ";
+                currentLevel.reason[4] = "H,";
             }
             if (previousLevel == StarInfo.bowser1)
             {
-                return "New Story Chapter ";
+                currentLevel.reason[3] = "R,";
             }
-
-            return "";
+            if ((currentLevel == StarInfo.dripdrop && currentStarCount >= 55) ||
+                (currentLevel.starNumber == 55 && StarInfo.dripdrop.isStarComplete) || 
+                currentLevel == StarInfo.bowserjr1 ||
+                currentLevel == StarInfo.bowser1 ||
+                currentLevel == StarInfo.bowserjr2 ||
+                currentLevel == StarInfo.bowser2)
+            {
+                currentLevel.reason[2] = "G,";
+            }
         }
 
         //Calculates which level should collect more than 18 starbits based on it's total amount of starbits. Prioritizes levels without notifs
