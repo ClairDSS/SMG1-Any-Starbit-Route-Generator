@@ -15,4 +15,6 @@ When writing in the path, make sure it leads directly to your text file. (For ex
 # Notes
 Currently, the program overwrites the text in your text file, so be sure to back it up if you don't want to lose it.
 
+It's likely that your antivirus will prevent this program from writing to your file, so you may have to either add it as an exception or pause your antivirus for a bit.
+
 If you notice any bugs or any places this can be improved, please tell me! I'm sure there's a ton of them both!

@@ -69,7 +69,7 @@ namespace Starbit_Route_Generator
         public bool HasNotifs()
         {
             //checks if a galaxy or story chapter is unlocked on this star.
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 6; i++)
             {
                 if (this.starNumber == starCountNotifTerrace[i])
                 {

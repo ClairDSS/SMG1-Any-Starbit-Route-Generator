@@ -22,7 +22,7 @@ namespace Starbit_Route_Generator
         //This will determine if the user wants to print out what kind of notifications each galaxy will have.
         public static bool printReason = true;
 
-        //this variable is a special counter that keeps track if buoy base is completed,
+        //this variable is a special counter that keeps track if buoy base is completed,  
         //as it is the only non-single star galaxy in the run that will be completed.
         public static int buoyBaseCounter = 0;
 
@@ -450,7 +450,17 @@ namespace Starbit_Route_Generator
                     }
                 }
 
-                notifOverlapLevels[currentMax.starNumber - 1] = route[currentMax.starNumber - 1];
+                //This is the stupidest, most ridiculous solution for an extremely random circumstantial problem I was having. But it works, soooo.
+                int starNumDifferential = 1;
+                try
+                {
+                    notifOverlapLevels[currentMax.starNumber - starNumDifferential] = route[currentMax.starNumber - starNumDifferential];
+                }
+                catch(IndexOutOfRangeException)
+                {
+                    starNumDifferential = 0;
+                    notifOverlapLevels[currentMax.starNumber - starNumDifferential] = route[currentMax.starNumber - starNumDifferential];
+                }
             }
 
             if (currentMax.maxBits == 0)
@@ -485,6 +495,8 @@ namespace Starbit_Route_Generator
                     StarInfo.levelList[i] = StarInfo.goodegg1;
                 if (sanitizedRoute[i] == "goodegg2" || sanitizedRoute[i] == "goodegg 2" || sanitizedRoute[i] == "good egg 2")
                     StarInfo.levelList[i] = StarInfo.goodegg2;
+                if (sanitizedRoute[i] == "goodegg3" || sanitizedRoute[i] == "goodegg 3" || sanitizedRoute[i] == "good egg 3")
+                    StarInfo.levelList[i] = StarInfo.goodegg3;
                 if (sanitizedRoute[i] == "honeyhive1" || sanitizedRoute[i] == "honeyhive 1" || sanitizedRoute[i] == "honey hive 1")
                     StarInfo.levelList[i] = StarInfo.honeyhive1;
                 if (sanitizedRoute[i] == "honeyhive2" || sanitizedRoute[i] == "honeyhive 2" || sanitizedRoute[i] == "honey hive 2")
